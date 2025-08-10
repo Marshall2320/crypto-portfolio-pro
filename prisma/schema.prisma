@@ -1,13 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
 
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "sqlite"; url = env("DATABASE_URL") }
+datasource db {
+  provider = "postgresql"   // ← Neon es Postgres
+  url      = env("DATABASE_URL")
+}
 
 model User {
-  id           String      @id @default(cuid())
-  email        String      @unique
-  name         String?
-  portfolios   Portfolio[]
-  createdAt    DateTime    @default(now())
+  id         String      @id @default(cuid())
+  email      String      @unique
+  name       String?
+  portfolios Portfolio[]
+  createdAt  DateTime    @default(now())
 }
 
 model Portfolio {
@@ -24,57 +29,57 @@ model Portfolio {
 }
 
 model AssetMap {
-  id           String   @id @default(cuid())
-  symbol       String
-  coingeckoId  String
-  portfolio    Portfolio @relation(fields: [portfolioId], references: [id])
-  portfolioId  String
+  id          String    @id @default(cuid())
+  symbol      String
+  coingeckoId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolioId String
 
   @@unique([portfolioId, symbol])
 }
 
 model SpotTx {
-  id           String    @id @default(cuid())
-  date         DateTime
-  asset        String
-  side         String    // "buy" | "sell"
-  qty          Decimal
-  price        Decimal
-  fee          Decimal   @default(0)
-  note         String?
-  portfolio    Portfolio @relation(fields: [portfolioId], references: [id])
-  portfolioId  String
+  id          String    @id @default(cuid())
+  date        DateTime
+  asset       String
+  side        String    // "buy" | "sell"
+  qty         Decimal
+  price       Decimal   // unit price in base currency
+  fee         Decimal   @default(0)
+  note        String?
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolioId String
 }
 
 model FuturesPos {
-  id           String    @id @default(cuid())
-  date         DateTime
-  asset        String
-  side         String    // "long" | "short"
-  qty          Decimal
-  entry        Decimal
-  leverage     Decimal   @default(0)
-  tp           Decimal?
-  sl           Decimal?
-  fee          Decimal   @default(0)
-  note         String?
-  isOpen       Boolean   @default(true)
-  portfolio    Portfolio @relation(fields: [portfolioId], references: [id])
-  portfolioId  String
+  id          String    @id @default(cuid())
+  date        DateTime
+  asset       String
+  side        String    // "long" | "short"
+  qty         Decimal
+  entry       Decimal
+  leverage    Decimal   @default(0)
+  tp          Decimal?
+  sl          Decimal?
+  fee         Decimal   @default(0)
+  note        String?
+  isOpen      Boolean   @default(true)
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolioId String
 }
 
 model FarmingPos {
-  id           String    @id @default(cuid())
-  date         DateTime
-  platform     String?
-  asset        String
-  qty          Decimal
-  apr          Decimal?  // % APR (informativo)
-  rewardsAsset String?
-  rewardsQty   Decimal?  @default(0)
-  note         String?
-  portfolio    Portfolio @relation(fields: [portfolioId], references: [id])
-  portfolioId  String
+  id            String    @id @default(cuid())
+  date          DateTime
+  platform      String?
+  asset         String
+  qty           Decimal
+  apr           Decimal?  // % APR (informativo)
+  rewardsAsset  String?
+  rewardsQty    Decimal?  @default(0)
+  note          String?
+  portfolio     Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolioId   String
 }
 
 model PriceCache {
